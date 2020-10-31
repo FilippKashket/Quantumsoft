@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='style.css')}}" type="text/css">
+</head>
+<body>
+<h2>Test task with trees</h2>
+
+{% macro render_items(item_list) %}
+        <ul>
+        {% for key in item_list %}
+            {% if key in tree_cur %}
+                <li>
+                    <span>
+                        {% if key == current_item %}
+                            {% set class_str="active" %}
+                        {% else %}
+                            {% set class_str="regular" %}
+                        {% endif %}
+                        {% if tree_cur[key].del %}
+                            {% set class_del=" deleted" %}
+                        {% else %}
+                            {% set class_del="" %}
+                        {% endif %}
+                        <a  class="{{class_str+class_del}}" href={{'/cur/'+key|string}}>
+                            {{tree_cur[key].value}}
+                        </a>
+                    </span>
+                    {% if tree_cur[key].children %}
+                {{render_items(tree_cur[key].children)}}
+                {% endif %}
+                </li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+{% endmacro %}
+
+{% macro render_items_db(item_list) %}
+        <ul>
+        {% for key in item_list %}
+            <li>
+                <span>
+                    {% if key == current_item_db %}
+                        {% set class_str="active" %}
+                    {% else %}
+                        {% set class_str="regular" %}
+                    {% endif %}
+                    {% if tree_db[key].del %}
+                        {% set class_del=" deleted" %}
+                    {% else %}
+                        {% set class_del="" %}
+                    {% endif %}
+
+                    <a  class="{{class_str+class_del}}" href={{'/db/'+key|string}}>
+                        {{tree_db[key].value}}
+                    </a>
+                </span>
+            {% if tree_db[key].children %}
+                {{render_items_db(tree_db[key].children)}}
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+{% endmacro %}
+
+<div class="box">
+    <div>
+        <div class="box-border">
+            <h2>Tree Data Base</h2>
+            {{render_items_db([0])}}
+        </div>
+        <form method="post" action="reset">
+            <input type="hidden" name="index" value="1">
+            <input type="submit" class="btn btn-dark" value="Reset">
+        </form>
+
+        <form method="post" action="apply">
+            <input type="hidden" name="index" value="1">
+            <input type="submit" class="btn btn-dark" value="Apply">
+        </form>
+    </div>
+
+    <div class="button-copy">
+        <form method="post" action="copy">
+            <input type="hidden" name="index" value="1">
+            <input type="submit" class="btn btn-dark" value="Copy">
+        </form>
+    </div>
+
+    <div>
+        <div class="box-border">
+            <h2>Tree cache</h2>
+            {{render_items(roots)}}
+        </div>
+        <form method="post" action="add">
+             <input type="text" name="value">
+            <input type="submit" class="btn btn-dark" value="Add">
+        </form>
+        <form method="post" action="edit">
+            {% if current_item != None %}
+            <input type="text" name="value" value={{tree_cur[current_item].value}}>
+            {% endif %}
+            <input type="submit" class="btn btn-dark" value="Edit">
+        </form>
+        <form method="post" action="del">
+            <input type="hidden" name="index" value="1">
+            <input type="submit" class="btn btn-dark" value="Del">
+        </form>
+    </div>
+</div>
+
+
+</body>
+</html>

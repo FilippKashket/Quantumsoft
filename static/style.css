@@ -1,0 +1,29 @@
+.box {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.box-border {
+    border-style: solid;
+    margin-right: 2rem;
+    min-height: 20rem;
+}
+
+.button-copy {
+  margin-right: 2rem;
+  padding-top: 5rem;
+}
+
+.active {
+    background-color: SkyBlue;
+}
+
+.regular {
+
+}
+
+.deleted {
+    border-style:solid;
+    border-color:red;
+}
