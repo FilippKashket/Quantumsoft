@@ -8,6 +8,47 @@
 <body>
 <h2>Test task with trees</h2>
 
+{% block script %}
+
+<script>
+
+  function submit_message() {
+
+    var value = document.getElementById("AddValue");
+
+    var entry = {
+      value: value
+    };
+    console.log(`${window.origin}/add`)
+    fetch(`${window.origin}/add`, {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(entry),
+      cache: "no-cache",
+      headers: new Headers({
+        "content-type": "application/json"
+      })
+    })
+      .then(function (response) {
+      console.log(response);
+        if (response.status !== 200) {
+          console.log(`Looks like there was a problem. Status code: ${response.status}`);
+          return;
+        }
+        response.json().then(function (data) {
+          console.log(data);
+        });
+      })
+      .catch(function (error) {
+        console.log("Fetch error: " + error);
+      });
+
+  }
+
+</script>
+
+{% endblock %}
+
 {% macro render_items(item_list) %}
         <ul>
         {% for key in item_list %}
@@ -92,12 +133,17 @@
     <div>
         <div class="box-border">
             <h2>Tree cache</h2>
+            <h2>{{warnings}}</h2>
             {{render_items(roots)}}
         </div>
-        <form method="post" action="add">
+<!--        <form method="post" action="add">
              <input type="text" name="value">
             <input type="submit" class="btn btn-dark" value="Add">
-        </form>
+        </form>-->
+        <div>
+            <input id="AddValue" type="text" name="value">
+            <button onclick="submit_message()">Add</button>
+        </div>
         <form method="post" action="edit">
             {% if current_item != None %}
             <input type="text" name="value" value={{tree_cur[current_item].value}}>
