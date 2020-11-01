@@ -59,7 +59,8 @@ class TreeDB:
             self.matrix[key] = {'del': value['del'], 'children': copy.deepcopy(value['children']),
                                 'value': value['value']}
             # If there is 'del' mark, let's del children too
-            del_children(self.matrix[key]['children'])
+            if self.matrix[key]['del']:
+                del_children(self.matrix[key]['children'])
 
     def reset(self):
         """
@@ -95,10 +96,10 @@ class Tree:
         set_current(number) - set index "number" as a current element
         insert_element(element, number) - insert element "element" in tree as a child of element with index "number"
         add_element(element, number) - add new
-
-        get_element(number) - get whole(deep) copy of element with index "number"
-
-        get_max() - get quantity elements in DB tree
+        is_current_deleted() -  Check that current element is deleted or not
+        del_element() - Delete element and all children
+        set_value(value) - Set value for current element
+        inc_max() - Increase quantity of elements
     """
 
     def __init__(self, my_max):
@@ -127,20 +128,33 @@ class Tree:
         # insert new element
         self.matrix[number] = element
         # We have to check if there are parent of element in our tree or not
-        if list(filter(lambda x: number in self.matrix[x]['children'], self.matrix)):
+        parent = list(filter(lambda x: number in self.matrix[x]['children'], self.matrix))
+        if parent:
             # if there is we will mark it as a usual element
             self.matrix[number]['root'] = 0
+            # if parent make as a deleted let's mark new too
+            if self.matrix[parent[0]]['del']:
+                self.matrix[number]['del'] = 1
+            # If parent element has children which aren't in cache tree we will add special mark
+            # self.matrix[parent[0]]['has_child'] = False
+            # for el in self.matrix[parent[0]]['children']:
+            #     if el not in self.matrix:
+            #         self.matrix[parent[0]]['has_child'] = True
         else:
             # if not We will add index of element to list of roots and mark it as a root
-            self.roots.append(number)
+            if number not in self.roots:
+                self.roots.append(number)
             self.matrix[number]['root'] = 1
 
-        # fot each children of our new element we will have to check it in roots list. If there is let's del it
+        # for each children of our new element we will have to check it in roots list. If there is let's del it
         # and mark as a usual element
         for el in self.matrix[number]['children']:
             if el in self.roots:
                 self.roots.remove(el)
                 self.matrix[el]['root'] = 0
+            # If element has children which aren't in cache tree we will add special mark
+            # if el not in self.matrix:
+            #     self.matrix[number]['has_child'] = True
 
     def add_element(self, element, number):
         """
@@ -152,28 +166,39 @@ class Tree:
         # Add new element in children of current
         self.matrix[self.current_item]['children'].append(number)
 
-    """
-        Check that current element is deleted or not
-    """
-
     def is_current_deleted(self):
+        """
+            Check that current element is deleted or not
+        """
         if self.matrix[self.current_item]['del']:
             return True
         else:
             return False
 
     def del_element(self):
+        """
+            Delete element and all children
+        """
         def del_all_children(item_list):
+            # Iterate keys
             for i in item_list:
+                # If key is int current cache tree we will mark it as a deleted
                 if i in self.matrix:
                     self.matrix[i]['del'] = 1
+                    # Call our function for children
                     del_all_children(self.matrix[i]['children'])
 
         if self.current_item is not None:
             del_all_children([self.current_item])
 
     def set_value(self, value):
+        """
+            Set value for current element
+        """
         self.matrix[self.current_item]['value'] = value
 
     def inc_max(self):
+        """
+            Increase quantity of elements
+        """
         self.max += 1

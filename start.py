@@ -15,7 +15,7 @@ tree_current = trees.Tree(tree_db.get_max())
 # Main page
 @app.route("/", methods=['GET'])
 def hello_world():
-    # It isn't good bacause whole page reloads every time when we cahne something in data.
+    # It isn't good because whole page reloads every time when we change something in data.
     # Maybe I will fix it later
     # Return main page
     return render_template('index.html', tree_db=tree_db.matrix, tree_cur=tree_current.matrix,
@@ -73,28 +73,25 @@ def edit_element():
 # If we push "Add" button we will have to add new element in Cache tree
 @app.route('/add', methods=['POST'])
 def add_element():
-    # Get new value from page
+    # Check if current element is already deleted we won't add child
     if tree_current.is_current_deleted():
         return jsonify(
             message="Success",
             warning="Current element is deleted! It is not good to add child to him!",
             status=200)
     else:
-        print(request.json['value']
-              )
-        # If value is not empty we will have to add new element
-        # if value != "":
-        #     # Increase count of elements in our tree
-        #     tree_current.inc_max()
-        #     # Crete new element
-        #     element = {'del': 0, 'children': [], 'value': value, 'root': 0}
-        #     # Add it in Cache tree
-        #     tree_current.add_element(element, tree_current.max)
-    # Call "hello_world()"
-    return jsonify(
+        # Get value from data
+        value = request.json['value']
+        # Increase count of elements in our tree
+        tree_current.inc_max()
+        # Crete new element
+        element = {'del': 0, 'children': [], 'value': value, 'root': 0}
+        # Add it in Cache tree
+        tree_current.add_element(element, tree_current.max)
+        # Return ok
+        return jsonify(
                    message="Success",
                    status=200)
-    #return redirect("/")
 
 
 # If we push "Reset" button we will have to reset both trees to initially state

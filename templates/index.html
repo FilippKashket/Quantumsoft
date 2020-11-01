@@ -14,35 +14,40 @@
 
   function submit_message() {
 
-    var value = document.getElementById("AddValue");
-
+    var value = document.getElementById("AddValue").value;
+    console.log(value)
     var entry = {
-      value: value
+      'value': value
     };
-    console.log(`${window.origin}/add`)
-    fetch(`${window.origin}/add`, {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify(entry),
-      cache: "no-cache",
-      headers: new Headers({
-        "content-type": "application/json"
-      })
-    })
-      .then(function (response) {
-      console.log(response);
-        if (response.status !== 200) {
-          console.log(`Looks like there was a problem. Status code: ${response.status}`);
-          return;
-        }
-        response.json().then(function (data) {
-          console.log(data);
-        });
-      })
-      .catch(function (error) {
-        console.log("Fetch error: " + error);
-      });
+    if (value!=""){
+        fetch(`${window.origin}/add`, {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(entry),
+          cache: "no-cache",
+          headers: new Headers({
+            "content-type": "application/json"
+          })
+        })
+          .then(function (response) {
+          console.log(response);
+            if (response.status !== 200) {
+              console.log(`Looks like there was a problem. Status code: ${response.status}`);
+              return;
+            }
+            response.json().then(function (data) {
 
+                if (data['warning']) {
+                    msg = document.getElementById("warning");
+                    msg.textContent = data['warning']
+                }
+                document.location.reload();
+            });
+          })
+          .catch(function (error) {
+            console.log("Fetch error: " + error);
+          });
+    }
   }
 
 </script>
@@ -65,8 +70,15 @@
                         {% else %}
                             {% set class_del="" %}
                         {% endif %}
+
+                        {% if tree_cur[key].has_child %}
+                            {% set has_child="+" %}
+                        {% else %}
+                            {% set has_child="" %}
+                        {% endif %}
+
                         <a  class="{{class_str+class_del}}" href={{'/cur/'+key|string}}>
-                            {{tree_cur[key].value}}
+                            {{has_child + tree_cur[key].value}}
                         </a>
                     </span>
                     {% if tree_cur[key].children %}
@@ -131,29 +143,51 @@
     </div>
 
     <div>
+        <span id="warning" class="warning">{{warning}}</span>
         <div class="box-border">
             <h2>Tree cache</h2>
-            <h2>{{warnings}}</h2>
             {{render_items(roots)}}
         </div>
+        {% if current_item != None and tree_cur[current_item].del  %}
+            {% set disabled="disabled" %}
+        {% else %}
+            {% set disabled="" %}
+        {% endif %}
 <!--        <form method="post" action="add">
              <input type="text" name="value">
             <input type="submit" class="btn btn-dark" value="Add">
         </form>-->
         <div>
-            <input id="AddValue" type="text" name="value">
-            <button onclick="submit_message()">Add</button>
+            <input id="AddValue" type="text" name="value" {{disabled}}>
+            <button onclick="submit_message()" {{disabled}}>Add</button>
         </div>
         <form method="post" action="edit">
             {% if current_item != None %}
-            <input type="text" name="value" value={{tree_cur[current_item].value}}>
+            <input type="text" name="value" value={{tree_cur[current_item].value}} {{disabled}}>
+            <input type="submit" class="btn btn-dark" value="Edit" {{disabled}}>
             {% endif %}
-            <input type="submit" class="btn btn-dark" value="Edit">
         </form>
-        <form method="post" action="del">
-            <input type="hidden" name="index" value="1">
-            <input type="submit" class="btn btn-dark" value="Del">
+        <form method="post"  action="del" disabled>
+            <input type="hidden" name="index" value="1" {{disabled}}>
+            <input type="submit" class="btn btn-dark" value="Del" {{disabled}}>
         </form>
+    </div>
+        <ul>
+            <li>Чтобы перенести элемент из омновной базы данных во временное дерево выделете элемент в левой таблице
+            и нажмите кнопку "copy"</li>
+            <li>Чтобы отредактировать элемент во временном дереве нажмите на него, внесите новое значение в поле рядом
+            с кнопкой "Edit" под таблицей и нажмите кнопку "Edit"</li>
+            <li>Чтобы добавить новый элемент во временное дерево, выделите элемент родитель, внесите значение в поле
+            рядом с кнопкой "Add" и нажмиет эту кнопку</li>
+            <li>Чтобы удалить элемент и его подчиненные элементы, выделете нужный элемент во временном дереве и
+            нажмите кнопку "Del"</li>
+            <li>Чтобы перенести измнения в Базу данных нажмиет кнопку "Apply" под левой таблицей</li>
+            <li>Чтобы вернуть оба дерева в первоначальное состояние нажмиете кнопку "Reset" под левой таблицей </li>
+            <li>Если елемент в кеше имеет подчиненные элементы которые не добавлены в кеш, то перед именем
+            элемента добавляется +</li>
+        </ul>
+    <div>
+
     </div>
 </div>
 
