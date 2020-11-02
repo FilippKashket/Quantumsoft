@@ -40,7 +40,7 @@ class TreeDB:
         # Current marked element in tree
         self.current_item = None
         # Quantity of elements
-        self.max = 5
+        self.max = len(self.matrix)-1
 
     def apply(self, new_tree):
         """
