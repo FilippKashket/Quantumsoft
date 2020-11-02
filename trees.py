@@ -28,11 +28,14 @@ class TreeDB:
             # 'children': [2, 1] - 1 and 2 are indexes of children
             # 'value': 'Node1' - value in element}
             0: {'del': 0, 'children': [2, 1], 'value': 'Node1'},
-            1: {'del': 0, 'children': [], 'value': 'Node2'},
+            1: {'del': 0, 'children': [6], 'value': 'Node2'},
             2: {'del': 0, 'children': [4], 'value': 'Node3'},
-            3: {'del': 0, 'children': [], 'value': 'Node4'},
+            3: {'del': 0, 'children': [7], 'value': 'Node4'},
             4: {'del': 0, 'children': [3, 5], 'value': 'Node5'},
             5: {'del': 0, 'children': [], 'value': 'Node6'},
+            6: {'del': 0, 'children': [8], 'value': 'Node7'},
+            7: {'del': 0, 'children': [], 'value': 'Node8'},
+            8: {'del': 0, 'children': [], 'value': 'Node9'},
         }
         # Current marked element in tree
         self.current_item = None
@@ -136,10 +139,10 @@ class Tree:
             if self.matrix[parent[0]]['del']:
                 self.matrix[number]['del'] = 1
             # If parent element has children which aren't in cache tree we will add special mark
-            # self.matrix[parent[0]]['has_child'] = False
-            # for el in self.matrix[parent[0]]['children']:
-            #     if el not in self.matrix:
-            #         self.matrix[parent[0]]['has_child'] = True
+            self.matrix[parent[0]]['has_child'] = False
+            for el in self.matrix[parent[0]]['children']:
+                if el not in self.matrix:
+                    self.matrix[parent[0]]['has_child'] = True
         else:
             # if not We will add index of element to list of roots and mark it as a root
             if number not in self.roots:
@@ -153,8 +156,8 @@ class Tree:
                 self.roots.remove(el)
                 self.matrix[el]['root'] = 0
             # If element has children which aren't in cache tree we will add special mark
-            # if el not in self.matrix:
-            #     self.matrix[number]['has_child'] = True
+            if el not in self.matrix:
+                self.matrix[number]['has_child'] = True
 
     def add_element(self, element, number):
         """
