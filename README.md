@@ -1,6 +1,8 @@
 "# Quantumsoft" 
 
 1. Install packajes for project
+$ virtualenv <NEWVIRTUALENV>
+$ source <NEWVIRTUALENV>/bin/activate
 $ pip install -r requirements.txt
     
 2. For run use
