@@ -2,9 +2,9 @@
 
 1. Install packajes for project
 
-$ virtualenv <NEWVIRTUALENV>
+$ virtualenv NEWVIRTUALENV
 
-$ source <NEWVIRTUALENV>/bin/activate
+$ source NEWVIRTUALENV/bin/activate
 
 $ pip install -r requirements.txt
     
