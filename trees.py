@@ -142,7 +142,8 @@ class Tree:
             self.matrix[number]['root'] = 0
             # if parent make as a deleted let's mark new too
             if self.matrix[parent[0]]['del']:
-                self.matrix[number]['del'] = 1
+                # self.matrix[number]['del'] = 1
+                self.del_element(number)
             # If parent element has children which aren't in cache tree we will add special mark
             self.matrix[parent[0]]['has_child'] = False
             for el in self.matrix[parent[0]]['children']:
