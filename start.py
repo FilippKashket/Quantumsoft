@@ -53,7 +53,7 @@ def copy_element():
 # If we push "Del" button we will have to mark it as deleted
 @app.route("/del", methods=['POST'])
 def delete_element():
-    tree_current.del_element()
+    tree_current.del_element(tree_current.current_item)
     # Call "hello_world()"
     return redirect("/")
 
@@ -110,5 +110,10 @@ def reset_db():
 def apply_changes():
     # Let's do it
     tree_db.apply(tree_current.matrix)
+    # We have to check all undeleted elements because they could be deleted in DB tree
+    for i in filter(lambda x: not tree_current.matrix[x]['del'], tree_current.matrix):
+        # If it is deleted lets mark as a deleted in cache tree
+        if tree_db.check_del(i):
+            tree_current.del_element(i)
     # Call "hello_world()"
     return redirect("/")

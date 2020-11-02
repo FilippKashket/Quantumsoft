@@ -50,20 +50,19 @@ class TreeDB:
         def del_children(item_list):
             # Check each children
             for i in item_list:
-                # If it is in our new tree we will delete it below in main for
-                if i not in new_tree:
-                    # Mark element as deleted
-                    self.matrix[i]['del'] = 1
-                    # Call func again for current children
-                    del_children(self.matrix[i]['children'])
+                # Mark element as deleted
+                self.matrix[i]['del'] = 1
+                # Call func again for current children
+                del_children(self.matrix[i]['children'])
 
         for key, value in new_tree.items():
             # We have to make whole copy of each element
-            self.matrix[key] = {'del': value['del'], 'children': copy.deepcopy(value['children']),
-                                'value': value['value']}
-            # If there is 'del' mark, let's del children too
-            if self.matrix[key]['del']:
-                del_children(self.matrix[key]['children'])
+            self.matrix[key] = {'del': value['del'],
+                                'children': copy.deepcopy(value['children']), 'value': value['value']}
+
+        # If there is 'del' mark, let's del children too
+        for value in filter(lambda value1: value1['del'], new_tree.values()):
+            del_children(value['children'])
 
     def reset(self):
         """
@@ -88,6 +87,12 @@ class TreeDB:
             get quantity elements in DB tree
         """
         return self.max
+
+    def check_del(self, number):
+        """
+            get mark of deleted
+        """
+        return self.matrix[number]['del']
 
 
 class Tree:
@@ -178,7 +183,7 @@ class Tree:
         else:
             return False
 
-    def del_element(self):
+    def del_element(self, number):
         """
             Delete element and all children
         """
@@ -192,7 +197,7 @@ class Tree:
                     del_all_children(self.matrix[i]['children'])
 
         if self.current_item is not None:
-            del_all_children([self.current_item])
+            del_all_children([number])
 
     def set_value(self, value):
         """
