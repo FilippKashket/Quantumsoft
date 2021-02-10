@@ -1,4 +1,4 @@
-"# Quantumsoft" 
+"# Quantumsoft". Task description look at 'task_proble.pdf' 
 
 1. Install packajes for project
 
